@@ -5,7 +5,6 @@ import { Button, Container } from "react-bootstrap";
 import { calculateWinner } from "../helper/calculateWInner";
 
 const Game = ({isBotEnabled}) => {
-    // Массив для хранения истории ходов
     const [history, setHistory] = useState([{
       squares: Array(9).fill(null),
       lastMoveIndex: null,
@@ -44,12 +43,11 @@ const Game = ({isBotEnabled}) => {
             .map((val, index) => val === null ? index : null)
             .filter(val => val !== null);
 
-        // Простая логика выбора свободного квадрата ботом
         const indexToPlay = availableMoves[Math.floor(Math.random() * availableMoves.length)];
 
         if (indexToPlay !== undefined) {
             const newSquares = [...current.squares];
-            newSquares[indexToPlay] = botSymbol; // Используем символ бота
+            newSquares[indexToPlay] = botSymbol;
 
             const newHistory = history.concat([{
                 squares: newSquares,
@@ -58,7 +56,7 @@ const Game = ({isBotEnabled}) => {
 
             setHistory(newHistory);
             setStepNumber(history.length);
-            setXIsNext(true); // Переключаем обратно на игрока
+            setXIsNext(true);
         }
     };
 
@@ -66,9 +64,9 @@ const Game = ({isBotEnabled}) => {
         if (!xIsNext) {
             const timer = setTimeout(() => {
                 botPlay();
-            }, 500); // Задержка хода бота
+            }, 500);
 
-            return () => clearTimeout(timer); // Очищаем таймер
+            return () => clearTimeout(timer);
         }
     }, [xIsNext, current, winner, isBotEnabled]);
   

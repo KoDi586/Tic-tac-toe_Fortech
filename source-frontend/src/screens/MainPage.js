@@ -6,7 +6,8 @@ const MainPage = () => {
     return (
         <>
             <Header/>
-            <Container className="d-flex flex-wrap justify-content-center" style={{marginTop: "75px", gap: '30px'}}>
+            <h1 style={{textAlign:'center', marginTop: '75px'}}>Главное меню</h1>
+            <Container className="d-flex flex-wrap justify-content-center" style={{marginTop: "25px", gap: '30px'}}>
                 <MainPageCard 
                     href='/sologame'
                     image='https://avatars.mds.yandex.net/i?id=7ca2bdf379c3338a505b2d1e9c1db6f505c15c54-10209290-images-thumbs&n=13'
@@ -18,12 +19,12 @@ const MainPage = () => {
                     title='Локальная игра'
                 /> 
                 <MainPageCard 
-                    href='/'
+                    href='/multiplayer'
                     image='https://avatars.mds.yandex.net/i?id=08f2b761c43390fdd39d7033a1afa63bb8d092de-12927189-images-thumbs&n=13'
                     title='Многопользовательская игра'
                 /> 
                 <MainPageCard 
-                    href='/'
+                    href='/rating'
                     image='https://www.nifi.ru/images/FILES/NEWS/2023/htqnbyub555.jpg'
                     title='Рейтинг'
                 /> 
