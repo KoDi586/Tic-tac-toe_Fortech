@@ -1,3 +1,18 @@
 server:
   port: ${env.MY_SERVER_PORT}
 
+spring:
+  sql:
+    init:
+      data-locations: classpath:sql/data.sql
+      schema-locations: classpath:sql/schema.sql
+      mode: always
+
+  datasource:
+    url: jdbc:postgresql://localhost:5433/${env.DATA_BASE_URL}
+    username: ${env.DATA_BASE_USER}
+    password: ${env.DATA_BASE_PASSWORD}
+
+  jpa:
+    hibernate:
+      ddl-auto: update

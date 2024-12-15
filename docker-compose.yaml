@@ -1,0 +1,16 @@
+services:
+
+  database:
+    image: postgres
+#    restart: unless-stopped
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_USER: ${DATA_BASE_USER}
+      POSTGRES_PASSWORD: ${DATA_BASE_PASSWORD}
+      POSTGRES_DB: ${DATA_BASE_URL}
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
