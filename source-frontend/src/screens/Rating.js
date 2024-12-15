@@ -24,12 +24,14 @@ const Rating = () => {
         },
     ]
 
-    const highlightedUserId = 2; // Замените на нужный ID
+    const highlightedUserId = +localStorage.getItem('user_id');
 
     return (
         <>
             <Header/>
+            
             <Container style={{marginTop: '75px', textAlign:'center'}}>
+                <h1 style={{textAlign: 'center'}}>Рейтинг</h1>
                 <Table>
                     <thead>
                         <tr>

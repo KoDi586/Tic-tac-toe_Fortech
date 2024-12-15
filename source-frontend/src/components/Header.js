@@ -1,9 +1,29 @@
+import { useState } from "react";
+import { Button } from "react-bootstrap";
 import Container from "react-bootstrap/Container";
 import Nav from "react-bootstrap/Nav";
 import Navbar from 'react-bootstrap/Navbar';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import AuthService from "../helper/AuthService";
 
 const Header = () => {
+
+    const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('token')); // Проверяем наличие токена
+    const navigate = useNavigate();
+
+
+    const handleLogin = async () => {
+        navigate('/login')
+    };
+
+    const handleLogout = () => {
+        AuthService.logout();
+        setIsLoggedIn(false);
+        window.location.reload();
+    };
+
+    const name = localStorage.getItem('username');
+
     return (
         <>
             <Navbar bg="primary" data-bs-theme="dark" fixed="top">
@@ -18,6 +38,15 @@ const Header = () => {
                             <Nav.Link as={Link} to="/multiplayer">Мультиплеер</Nav.Link>
                             <Nav.Link as={Link} to="/rating">Рейтинг</Nav.Link>
                         </Nav>
+                        
+                        <Button 
+                            variant={isLoggedIn ? "outline-light" : "light"} 
+                            onClick={isLoggedIn ? handleLogout : handleLogin}
+                        >
+                            {isLoggedIn ? 'Выйти' : 'Войти'}
+                        </Button>
+
+                        <p style={{ color: 'white', marginLeft: '25px', marginTop: '15px'}}>{isLoggedIn ? "Пользователь: " + name  : ''}</p>
                     </Navbar.Collapse>
                 </Container>
             </Navbar>

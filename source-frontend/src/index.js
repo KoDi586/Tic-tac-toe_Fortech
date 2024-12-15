@@ -21,7 +21,6 @@ root.render(
         <Route path='/' element={<MainPage/>}/>
         <Route element={<PrivateRoute />}>
           <Route path='/multiplayer' element={<Multiplayer />} />
-          
         </Route>
         <Route path='/rating' element={<Rating />}/>
         <Route path='/login' element={<Login/>}/>
