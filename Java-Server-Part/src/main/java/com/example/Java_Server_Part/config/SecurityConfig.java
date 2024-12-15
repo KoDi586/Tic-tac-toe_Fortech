@@ -1,5 +1,6 @@
 package com.example.Java_Server_Part.config;
 import lombok.RequiredArgsConstructor;
+import lombok.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -20,6 +21,7 @@ import java.util.List;
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
+
 public class SecurityConfig {
 
     private static final String[] AUTH_WHITELIST = {
@@ -31,6 +33,8 @@ public class SecurityConfig {
 
     };
     private final JwtTokenProvider jwtTokenProvider;
+//    @Value("${accept.url}")
+    private final String ACCEPT_URL = "http://26.78.251.27:3000";
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -52,7 +56,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowCredentials(true);
-        configuration.setAllowedOrigins(List.of("http://localhost:3000"));
+        configuration.setAllowedOrigins(List.of(ACCEPT_URL));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

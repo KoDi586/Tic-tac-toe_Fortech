@@ -39,7 +39,7 @@ public class AuthController {
 
         // Генерация JWT токена
         String token = jwtTokenProvider.generateToken(authentication);
-        return ResponseEntity.ok(new TokenAndUserIdDto(token, 1L, authRequest.getUsername()));
+        return ResponseEntity.ok(new TokenAndUserIdDto(token, userService.findByUsername(authRequest.getUsername()).getId(), authRequest.getUsername()));
     }
 
     // Метод для регистрации нового пользователя
@@ -55,7 +55,7 @@ public class AuthController {
 
         // Генерация JWT токена
         String token = jwtTokenProvider.generateToken(authentication);
-        return ResponseEntity.ok(new TokenAndUserIdDto(token, 1L, user.getUsername()));
+        return ResponseEntity.ok(new TokenAndUserIdDto(token, userService.findByUsername(user.getUsername()).getId(), user.getUsername()));
     }
 
 

@@ -1,5 +1,7 @@
 server:
   port: ${env.MY_SERVER_PORT}
+accept:
+  url: ${env.ACCEPT_URL}
 
 spring:
   sql:

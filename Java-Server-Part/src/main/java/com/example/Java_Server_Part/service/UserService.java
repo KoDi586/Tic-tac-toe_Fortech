@@ -25,6 +25,9 @@ public class UserService {
 
     public void userSave(UserDto user) {
         try {
+            if (user.getPassword().isBlank() || user.getUsername().isBlank()) {
+                return;
+            }
             userRepository.findByUsername(user.getUsername()).get();
         } catch (Exception e) {
             userRepository.save(new UserModel(
@@ -33,6 +36,5 @@ public class UserService {
                     user.getPassword()
             ));
         }
-
     }
 }
