@@ -19,7 +19,7 @@ public class UserService {
             return userRepository.findByUsername(username).get();
         } catch (Exception e) {
             log.warn("not found user");
-            return new UserModel(22L, "22user", "22password");
+            return new UserModel();
         }
     }
 
@@ -33,8 +33,42 @@ public class UserService {
             userRepository.save(new UserModel(
                     userRepository.count() + 1,
                     user.getUsername(),
-                    user.getPassword()
+                    user.getPassword(),
+                    100,
+                    "passive"
             ));
+        }
+    }
+
+    public UserModel getUserById(String userId) {
+        try {
+            return userRepository.findById(Long.parseLong(userId)).get();
+        } catch (NumberFormatException e) {
+            log.warn("error!!!!!!!!!!!!!!!!");
+            return new UserModel();
+        }
+
+    }
+
+    public UserModel findOpponent() {
+        try {
+            return userRepository.findFirstUserByStatusSearch().get();
+        } catch (Exception e) {
+            log.warn("error !!!!!!!!!!!!!!!!!!");
+            return null;
+        }
+    }
+
+    public void updateUserStatus(UserModel user, String playing) {
+        user.setStatus(playing);
+    }
+
+    public UserModel findById(Long userId) {
+        try {
+            return userRepository.findById(userId).get();
+        } catch (Exception e) {
+            log.warn("error!!!!!!!!!!");
+            return null;
         }
     }
 }

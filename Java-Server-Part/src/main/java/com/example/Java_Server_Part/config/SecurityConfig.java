@@ -42,6 +42,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorization ->
                         authorization
+//                                .requestMatchers("/game/**").permitAll()
                                 .requestMatchers("/user/**").hasRole("USER")
                                 .requestMatchers(AUTH_WHITELIST)
                                 .permitAll()

@@ -17,4 +17,7 @@ public class UserModel {
     private Long id;
     private String username;
     private String password;
+    private Integer rating;
+    private String status;
+
 }
