@@ -1,0 +1,10 @@
+.foot_reg {
+    text-decoration: none;
+    transition: 0.5s;
+}
+
+.foot_reg.foot_reg__hover:hover {
+    color: white;
+    background-color: #0d6efd;
+    transform: scale(1.01);
+}
