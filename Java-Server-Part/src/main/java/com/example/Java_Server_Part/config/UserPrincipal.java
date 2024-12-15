@@ -9,10 +9,12 @@ import java.util.Collection;
 
 public class UserPrincipal implements UserDetails {
     private String username;
+    private String password;
     private Collection<? extends GrantedAuthority> authorities;
 
-    public UserPrincipal(String username) {
+    public UserPrincipal(String username, String password) {
         this.username = username;
+        this.password = password;
         this.authorities = Arrays.asList(new SimpleGrantedAuthority("ROLE_USER")); // Пример роли
     }
 
@@ -23,7 +25,7 @@ public class UserPrincipal implements UserDetails {
 
     @Override
     public String getPassword() {
-        return "";
+        return password;
     }
 
     @Override

@@ -23,21 +23,12 @@ import java.util.List;
 public class SecurityConfig {
 
     private static final String[] AUTH_WHITELIST = {
-            "/login",
-            "/register"
+            "/auth/**",
+            "/swagger-resources/**", // для Swagger
+            "/v3/api-docs", // документация
+            "/swagger-ui/**" // UI для Swagger
             // таблица рейтинга,
-//            "/swagger-resources/**",
-//            "/v3/api-docs",
-//            "/webjars/**",
-//            "/swagger/**",
-//            "/swagger-ui/**",
-//            "/api-docs/**",
-//            "/login",
-//            "/image/**",
-//            "/ads",
-//            "/register"
-//            "/ads/**",
-//            "/users/**"
+
     };
     private final JwtTokenProvider jwtTokenProvider;
 
@@ -47,7 +38,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorization ->
                         authorization
-                                .requestMatchers("/admin/**").hasRole("ADMIN")
+                                .requestMatchers("/user/**").hasRole("USER")
                                 .requestMatchers(AUTH_WHITELIST)
                                 .permitAll()
                                 .requestMatchers("/**")
@@ -56,8 +47,6 @@ public class SecurityConfig {
 
         return http.build();
     }
-
-
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
@@ -71,7 +60,7 @@ public class SecurityConfig {
         return source;
     }
 
-    @Bean
+    @Bean(name = "BCryptPasswordEncoder")
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
