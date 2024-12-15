@@ -1,261 +1,134 @@
-В данной работе было реализованно все ТЗ, а также был добавленн бот с которым, можно поиграть (когда не с кем). Ниже будет представленно примерное описание работы данного React приложения.
-Основной файл реакт приложения в котором релизованна с помощою react-router-dom управление маршрутами:
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import {BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 
-import 'bootstrap/dist/css/bootstrap.min.css';
+# React Приложение: Игровая платформа
 
-import MainPage from './screens/MainPage';
-import LocalGame from './screens/LocalGame';
-import SoloGame from './screens/SoloGame';
-import PrivateRoute from './components/PrivateRoute';
-import Multiplayer from './screens/Multiplayer';
-import Rating from './screens/Rating';
-import Login from './screens/Login';
-import Register from './screens/Register';
+В этом проекте реализовано задание, соответствующее техническому заданию (ТЗ), а также добавлен бот, с которым можно играть в одиночном режиме. Приложение разделено на фронтенд (React) и бэкенд (Spring Boot). 
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(
-  <React.StrictMode>
-    <Router>
-      <Routes>
-        <Route path='/' element={<MainPage/>}/>
-        <Route element={<PrivateRoute />}>
-          <Route path='/multiplayer' element={<Multiplayer />} />
-        </Route>
-        <Route path='/rating' element={<Rating />}/>
-        <Route path='/login' element={<Login/>}/>
-        <Route path='/register' element={<Register/>}/>
-        <Route path='*' element={<Navigate to='/register' />} />
+---
 
-        <Route path='/localgame' element={<LocalGame/>}/>
-        <Route path='/sologame' element={<SoloGame/>}/>
-      </Routes>
-    </Router>
-  </React.StrictMode>
-);
-Все экранны находятся в папке screen, а уже компаненты, которые отрисовываются в экрвнах в папке components.
-Для отрисовки поле игры был созданн компонент Game ниже представлен код:
-import { Square } from "../components/Square";
-import { useEffect, useState } from "react";
-import './styles.css'
-import { Button, Container } from "react-bootstrap";
-import { calculateWinner } from "../helper/calculateWInner";
+## Функционал приложения
 
-const Game = ({isBotEnabled}) => {
-    const [history, setHistory] = useState([{
-      squares: Array(9).fill(null),
-      lastMoveIndex: null,
-    }]);
+### Основной функционал
+- Реализация маршрутов с помощью `react-router-dom`.
+- Два игровых режима:
+  - **Локальная игра**: два игрока за одним устройством.
+  - **Игра с ботом**: одиночная игра против ИИ.
+- Управление состоянием игры: ход, история ходов, отмена последнего хода.
+- Поддержка авторизации и регистрации:
+  - Только авторизованные пользователи могут играть в мультиплеере.
+  - Имя авторизованного пользователя отображается в рейтинге.
 
-    const [stepNumber, setStepNumber] = useState(0); 
-    const [xIsNext, setXIsNext] = useState(true);
-    const [currentSymbol, setCurrentSymbol] = useState('X')
-    const [botSymbol, setBotSymbol] = useState('O');;
+---
 
-    const current = history[stepNumber];
-    const winner = calculateWinner(current.squares);
-    
-    const handleClick = (i) => {
-      if (winner || current.squares[i]) {
-        return;
-      }
-      
-      const newSquares = [...current.squares];
-        newSquares[i] = xIsNext ? currentSymbol : (currentSymbol === 'X' ? 'O' : 'X');
-  
-      const newHistory =  history.concat([{
-        squares: newSquares,
-        lastMoveIndex: i,
-      }]);
-  
-      setHistory(newHistory);
-      setStepNumber(history.length);
-      setXIsNext(!xIsNext);
-    };
+## Фронтенд
 
-    const botPlay = () => {
-        if (xIsNext || winner || !isBotEnabled) return;
+### Маршруты
+Пример конфигурации маршрутов:
+```jsx
+<Router>
+  <Routes>
+    <Route path="/" element={<MainPage />} />
+    <Route element={<PrivateRoute />}>
+      <Route path="/multiplayer" element={<Multiplayer />} />
+    </Route>
+    <Route path="/rating" element={<Rating />} />
+    <Route path="/login" element={<Login />} />
+    <Route path="/register" element={<Register />} />
+    <Route path="*" element={<Navigate to="/register" />} />
+    <Route path="/localgame" element={<LocalGame />} />
+    <Route path="/sologame" element={<SoloGame />} />
+  </Routes>
+</Router>
+```
 
-        const availableMoves = current.squares
-            .map((val, index) => val === null ? index : null)
-            .filter(val => val !== null);
+### Компонент Game
+Ключевая логика игры сосредоточена в компоненте `Game`. Основные возможности:
+- Отрисовка игрового поля.
+- Логика определения победителя.
+- История ходов и возврат к предыдущему ходу.
+- Поддержка игры против бота, подключаемого через проп `isBotEnabled`.
 
-        const indexToPlay = availableMoves[Math.floor(Math.random() * availableMoves.length)];
+Пример использования компонента:
+- **Без бота**:
+  ```jsx
+  <Game />
+  ```
+- **С ботом**:
+  ```jsx
+  <Game isBotEnabled />
+  ```
 
-        if (indexToPlay !== undefined) {
-            const newSquares = [...current.squares];
-            newSquares[indexToPlay] = botSymbol;
+### Авторизация
+Для взаимодействия с сервером используется библиотека `axios`. Реализованы:
+- Регистрация пользователя.
+- Авторизация пользователя.
+- Отображение имени авторизованного пользователя в рейтинге.
 
-            const newHistory = history.concat([{
-                squares: newSquares,
-                lastMoveIndex: indexToPlay,
-            }]);
+---
 
-            setHistory(newHistory);
-            setStepNumber(history.length);
-            setXIsNext(true);
-        }
-    };
+## Бэкенд
 
-    useEffect(() => {
-        if (!xIsNext) {
-            const timer = setTimeout(() => {
-                botPlay();
-            }, 500);
+### Технологии
+- **Язык**: Java 21 (Amazon Corretto).
+- **Фреймворк**: Spring Boot.
+- **База данных**: PostgreSQL.
+- **ORM**: Hibernate.
+- **Безопасность**: Spring Security.
 
-            return () => clearTimeout(timer);
-        }
-    }, [xIsNext, current, winner, isBotEnabled]);
-  
-    const restartGame = () => {
-      setHistory([{
-        squares: Array(9).fill(null),
-        lastMoveIndex: null,
-      }]);
-      setStepNumber(0);
-      setXIsNext(true);
-    };
-  
-    const undoLastMove = () => {
-        if (stepNumber != 0) {
-            if (stepNumber > 0) {
-                setStepNumber(stepNumber - 1);
-                setXIsNext((stepNumber - 1) % 2 !== 0);
-            }
-        
-            const newHistory = history.slice(0, stepNumber);
-            setHistory(newHistory);
-            setStepNumber(stepNumber - 1);
-            setXIsNext(!xIsNext);
-        }
-    };
-    
-    const toggleSymbol = () => {
-        if (stepNumber === 0) {
-            setCurrentSymbol(currentSymbol === 'X' ? 'O' : 'X');
-            setBotSymbol(botSymbol === 'X' ? 'O' : 'X')
-        }
-      };
+### Архитектура
+- Архитектурный паттерн **MVC**.
+- Данные пользователей и игр хранятся в PostgreSQL. Для инициализации данных используются SQL-скрипты:
+  - `schema.sql` – структура таблиц.
+  - `data.sql` – тестовые данные.
 
-    const jumpTo = (step) => {
-        setStepNumber(step);
-        setXIsNext((step % 2) === 0);
-    };
-    
+### Настройка
+- Конфиденциальные данные хранятся в `.env` файле.
+- Настройки приложения указаны в `application.yaml`.
+- Для поднятия базы данных используется `docker-compose`.
 
-    const renderInitialBoard = () => {
-      return (
-        <Container>
-            <div className="status" style={{marginLeft: '75px'}} onClick={toggleSymbol}>{status}</div>
-            <div className="status" style={{marginLeft: '40px'}} onClick={toggleSymbol}>Нажмите чтобы поменять знак</div>
-            <div className="board-row initial-board">
-                <Square value={current.squares[0]} onSquareClick={(i) => handleClick(0)} />
-                <Square value={current.squares[1]} onSquareClick={(i) => handleClick(1)} />
-                <Square value={current.squares[2]} onSquareClick={(i) => handleClick(2)} />
-            </div>
-            <div className="board-row initial-board">
-                <Square value={current.squares[3]} onSquareClick={(i) => handleClick(3)} />
-                <Square value={current.squares[4]} onSquareClick={(i) => handleClick(4)} />
-                <Square value={current.squares[5]} onSquareClick={(i) => handleClick(5)} />
-            </div>
-            <div className="board-row initial-board">
-                <Square value={current.squares[6]} onSquareClick={(i) => handleClick(6)} />
-                <Square value={current.squares[7]} onSquareClick={(i) => handleClick(7)} />
-                <Square value={current.squares[8]} onSquareClick={(i) => handleClick(8)} />
-            </div>
-            <Button style={{width: '100px', marginTop:'25px'}} onClick={restartGame}>Рестарт</Button>
-            <Button style={{width: '100px', marginTop:'25px', marginLeft:'100px'}} onClick={undoLastMove}>Возврат</Button>
-        </Container>
-        
-      );
-    };
-  
-    const renderPastBoards = () => {
-      return history.slice(0, stepNumber).map((_, index) => {
-        const state = history[index];
-        return (
-            <Container style={{marginTop: '25px'}}>
-                <div className="status" style={{marginLeft:'100px'}}>Ход №{index}</div>
-                <div key={index} className={`nohange board-row past-board-${index}`}>
-                    <Square value={state.squares[0]} />
-                    <Square value={state.squares[1]} />
-                    <Square value={state.squares[2]} />
-                </div>
-                <div key={index} className={`nohange board-row past-board-${index}`}>
-                    <Square value={state.squares[3]} />
-                    <Square value={state.squares[4]} />
-                    <Square value={state.squares[5]} />
-                </div>
-                <div key={index} className={`nohange board-row past-board-${index}`}>
-                    <Square value={state.squares[6]} />
-                    <Square value={state.squares[7]} />
-                    <Square value={state.squares[8]} />
-                </div>
-                
-            </Container>
-        
-        );
-      });
-    };
-  
-    let status;
-    if (winner) {
-      status = `Победитель: ${winner}`;
-    } else {
-      status = `Следующий игрок: ${xIsNext ? currentSymbol : (currentSymbol === 'X' ? 'O' : 'X')}`;
-    }
-  
-    return (
-      <Container style={{ marginTop: '75px', display:'grid', gridTemplateColumns:'auto auto'}}>
-        
-        <div>  
-            {renderInitialBoard()}
-        </div>
-        <div>
-            {renderPastBoards()}
-        </div>
-      </Container>
-    );
-  };
-  
-  
-  export default Game;
-  Так в данном файле реализованна весь функционал для выполнения ТЗ и плюс был добавлен бот, который можно подключить спомощью пропса isBotEnabled ниже представленн пример вызова данного компонента:
-  №1 Без бота
-import Game from "../components/Game";
-import Header from "../components/Header";
+Пример конфигурации базы данных:
+```yaml
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/game
+    username: user
+    password: password
+  jpa:
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        format_sql: true
+```
 
+---
 
-const LocalGame = () => {
-    return(
-        <>
-            <Header/>
-            <h1 style={{marginTop: '75px'}}>Локальная игра</h1>
-            <Game/>
-        </>
-    )
-    
-};
+## Дополнительно
 
-export default LocalGame;
-  №2 С ботом
-import Game from "../components/Game";
-import Header from "../components/Header";
+- В **master** ветке хранится рабочая версия кода.
+- В ветке `websocket-test` велась разработка мультиплеера через WebSocket, но реализация не завершена.
 
+---
 
-const SoloGame = () => {
-    
-    return(
-        <>
-            <Header/>
-            <h1 style={{marginTop: '75px'}}>Одиночная игра</h1>
-            <Game isBotEnabled/>
-        </>
-    )
-    
-};
+## Запуск проекта
 
-export default SoloGame;
-Также был написан сервис для аутинфикации пользователя и создания аккаунтов. Так чтобы перейти во вкладку мультиплеер нужно войти в аккаунт, также при входе в аккаунт имя пользователя подсвечивается в рейтинге. Для общеня с сервером использовалась библиотека axios.
+1. Склонируйте репозиторий.
+2. Настройте `.env` файл и заполните его данными.
+3. Запустите бэкенд:
+   ```bash
+   ./mvnw spring-boot:run
+   ```
+4. Запустите фронтенд:
+   ```bash
+   cd source-frontend
+   npm install
+   npm start
+   ```
+5. Для работы базы данных используйте `docker-compose`:
+   ```bash
+   docker-compose up
+   ```
+
+---
+
+## Контакты
+Если у вас есть вопросы или предложения, создавайте **Issue** в репозитории.
