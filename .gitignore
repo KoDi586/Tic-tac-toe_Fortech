@@ -40,3 +40,4 @@ build/
 
 ### ENV FILE ###
 /Java-Server-Part/src/main/resources/.env
+/Java-Server-Part/src/main/resources/static/index.html
