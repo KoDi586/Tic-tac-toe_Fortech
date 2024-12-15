@@ -85,21 +85,6 @@
 - Настройки приложения указаны в `application.yaml`.
 - Для поднятия базы данных используется `docker-compose`.
 
-Пример конфигурации базы данных:
-```yaml
-spring:
-  datasource:
-    url: jdbc:postgresql://localhost:5432/game
-    username: user
-    password: password
-  jpa:
-    hibernate:
-      ddl-auto: none
-    properties:
-      hibernate:
-        format_sql: true
-```
-
 ---
 
 ## Дополнительно
