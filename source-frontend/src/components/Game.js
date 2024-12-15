@@ -110,6 +110,7 @@ const Game = ({isBotEnabled}) => {
       return (
         <Container>
             <div className="status" style={{marginLeft: '75px'}} onClick={toggleSymbol}>{status}</div>
+            <div className="status" style={{marginLeft: '100px'}} onClick={toggleSymbol}>Смена знака</div>
             <div className="board-row initial-board">
                 <Square value={current.squares[0]} onSquareClick={(i) => handleClick(0)} />
                 <Square value={current.squares[1]} onSquareClick={(i) => handleClick(1)} />
