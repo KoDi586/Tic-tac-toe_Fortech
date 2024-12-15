@@ -2,8 +2,11 @@ package com.example.Java_Server_Part.controller;
 
 import com.example.Java_Server_Part.config.JwtTokenProvider;
 import com.example.Java_Server_Part.dto.AuthRequestDto;
+import com.example.Java_Server_Part.dto.TokenAndUserIdDto;
+import com.example.Java_Server_Part.dto.UserDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -25,10 +28,8 @@ public class AuthController {
 
     // Endpoint для логина
     @PostMapping("/login")
-    public String login(@RequestBody AuthRequestDto authRequest) {
-        log.info("login data = {}", authRequest);
+    public ResponseEntity<TokenAndUserIdDto> login(@RequestBody AuthRequestDto authRequest) {
         Authentication authentication1 = new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword());
-        log.info("authentication1: {}", authentication1);
         Authentication authentication = authenticationManager.authenticate(
                 authentication1
         );
@@ -36,24 +37,17 @@ public class AuthController {
 
         // Генерация JWT токена
         String token = jwtTokenProvider.generateToken(authentication);
-        return token;
+        return ResponseEntity.ok(new TokenAndUserIdDto(token, 1L));
     }
 
     // Метод для регистрации нового пользователя
-//    @PostMapping("/register")
-//    public String register(@RequestBody UserDto user) {
-//        // Логика регистрации пользователя (сохранение в базу данных и т.д.)
-//        return "User registered";
-//    }
     @PostMapping("/register")
-    public String register(@RequestParam Long test) {
+    public String register(@RequestBody UserDto user) {
         // Логика регистрации пользователя (сохранение в базу данных и т.д.)
         return "User registered";
     }
 
-    @GetMapping("/login")
-    public String getTest() {
-        return "working";
-    }
+
+
 }
 

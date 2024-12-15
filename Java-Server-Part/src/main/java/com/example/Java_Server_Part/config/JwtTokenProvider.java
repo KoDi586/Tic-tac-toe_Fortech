@@ -1,8 +1,6 @@
 package com.example.Java_Server_Part.config;
 
 import io.jsonwebtoken.*;
-import io.jsonwebtoken.io.Decoders;
-import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -12,31 +10,23 @@ import org.springframework.stereotype.Component;
 import jakarta.servlet.http.HttpServletRequest;
 
 import javax.crypto.SecretKey;
-import java.nio.charset.StandardCharsets;
-import java.security.Key;
+
 import java.util.Date;
 
 @RequiredArgsConstructor
 @Component
 public class JwtTokenProvider {
-
-    private final String JWT_SECRET = "secret_key"; // Секретный ключ для подписи токенов
+//    private final String JWT_SECRET = "secret_key"; // Секретный ключ для подписи токенов
     private final long JWT_EXPIRATION = 604800000L; // Время жизни токена - 7 дней
+    private final SecretKey secretKey = Jwts.SIG.HS256.key().build();
 
     public String generateToken(Authentication authentication) {
         UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
-//        Key key = Keys.hmacShaKeyFor(JWT_SECRET.getBytes());
-//        byte[] keyBytes = this.JWT_SECRET.getBytes(StandardCharsets.UTF_8);
-        SecretKey secretKey = Jwts.SIG.HS256.key().build();
 
         return Jwts.builder()
                 .subject(userPrincipal.getUsername())
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + JWT_EXPIRATION))
-//                .setSubject(userPrincipal.getUsername())
-//                .setIssuedAt(new Date())
-//                .setExpiration(new Date(System.currentTimeMillis() + JWT_EXPIRATION))
-//                .signWith(key, SignatureAlgorithm.HS512)
                 .signWith(secretKey)
                 .compact();
     }
@@ -48,7 +38,11 @@ public class JwtTokenProvider {
     // check token
     public boolean validateToken(String token) {
         try {
-            Jwts.parser().setSigningKey(JWT_SECRET).build().parseSignedClaims(token);
+            Jwts.parser()
+                    .verifyWith(secretKey)
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload();
             return true;
         } catch (JwtException | IllegalArgumentException e) {
             return false;
@@ -57,7 +51,11 @@ public class JwtTokenProvider {
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     public Authentication getAuthentication(String token) {
-        Claims claims = Jwts.parser().setSigningKey(JWT_SECRET).build().parseSignedClaims(token).getBody();
+        Claims claims = Jwts.parser()
+                .verifyWith(secretKey)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
         String username = claims.getSubject();//извлечение ключегого поля элемента
         // поиск user and his password
         String encodePassword = passwordEncoder.encode("password");
